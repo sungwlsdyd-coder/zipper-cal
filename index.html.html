@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #242424;
+    --border: #2e2e2e; --accent: #e8ff3b; --accent2: #ff6b2b;
+    --text: #f0f0f0; --muted: #666;
+    --mono: 'DM Mono', monospace; --sans: 'Noto Sans KR', sans-serif; --display: 'Bebas Neue', cursive;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; padding: 24px 16px; }
+  .app { max-width: 680px; margin: 0 auto; }
+
+  .header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 32px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+  .header-title { font-family: var(--display); font-size: 42px; letter-spacing: 2px; color: var(--accent); line-height: 1; }
+  .header-sub { font-size: 11px; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; }
+
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 20px; margin-bottom: 12px; }
+  .section-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; font-family: var(--mono); }
+
+  .fee-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+  .field input, .field select {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 3px;
+    color: var(--text); font-family: var(--mono); font-size: 14px; padding: 9px 12px;
+    outline: none; transition: border-color 0.15s; width: 100%;
+  }
+  .field input:focus { border-color: var(--accent); }
+
+  /* Margin section */
+  .margin-section { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 20px; margin-bottom: 12px; }
+  .margin-row { display: flex; align-items: center; gap: 16px; }
+  .margin-slider-wrap { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .margin-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); font-family: var(--mono); }
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 4px;
+    background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct), #2e2e2e var(--pct), #2e2e2e 100%);
+    border-radius: 2px; outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    background: var(--accent); border-radius: 50%; cursor: pointer;
+    box-shadow: 0 0 8px rgba(232,255,59,0.4);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 18px; height: 18px; background: var(--accent);
+    border-radius: 50%; border: none; cursor: pointer;
+  }
+  .margin-value-box {
+    background: var(--surface2); border: 1px solid var(--accent);
+    border-radius: 3px; padding: 10px 16px; text-align: center; min-width: 72px;
+  }
+  .margin-value-box .mv-num { font-family: var(--display); font-size: 32px; color: var(--accent); line-height: 1; }
+  .margin-value-box .mv-unit { font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
+
+  /* Step buttons */
+  .step-btns { display: flex; gap: 6px; margin-top: 8px; }
+  .step-btn {
+    flex: 1; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--muted); font-family: var(--mono); font-size: 13px;
+    padding: 6px; border-radius: 3px; cursor: pointer; transition: all 0.15s; text-align: center;
+  }
+  .step-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Items */
+  .items-header {
+    display: grid; grid-template-columns: 90px 80px 70px 80px 32px;
+    gap: 8px; font-size: 10px; color: var(--muted); font-family: var(--mono);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; padding: 0 2px;
+  }
+  .item-row { display: grid; grid-template-columns: 90px 80px 70px 80px 32px; gap: 8px; margin-bottom: 7px; align-items: center; }
+  .item-row input, .item-row select {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 3px;
+    color: var(--text); font-family: var(--mono); font-size: 13px; padding: 8px 10px;
+    outline: none; width: 100%; transition: border-color 0.15s;
+  }
+  .item-row input:focus, .item-row select:focus { border-color: var(--accent); }
+  .item-meters { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: right; }
+  .btn-remove {
+    background: none; border: 1px solid #333; border-radius: 3px; color: var(--muted);
+    cursor: pointer; font-size: 16px; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .btn-remove:hover { border-color: var(--accent2); color: var(--accent2); }
+  .btn-add {
+    background: none; border: 1px dashed var(--border); border-radius: 3px; color: var(--muted);
+    cursor: pointer; font-size: 12px; font-family: var(--mono); padding: 8px 16px;
+    margin-top: 4px; width: 100%; transition: all 0.15s; letter-spacing: 0.1em;
+  }
+  .btn-add:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Result */
+  .result-section { background: var(--surface); border: 1px solid var(--accent); border-radius: 4px; padding: 24px 20px; margin-top: 4px; }
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .result-item { display: flex; flex-direction: column; gap: 4px; }
+  .r-label { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 0.12em; text-transform: uppercase; }
+  .r-value { font-family: var(--mono); font-size: 18px; color: var(--text); }
+  .result-pair { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 20px; }
+  .big-price { display: flex; flex-direction: column; gap: 4px; }
+  .big-price .r-value { font-family: var(--display); font-size: 52px; color: var(--accent); letter-spacing: 1px; line-height: 1; }
+  .cost-price { display: flex; flex-direction: column; gap: 4px; padding-bottom: 6px; }
+  .cost-price .r-value { font-family: var(--display); font-size: 28px; color: var(--muted); line-height: 1; text-decoration: line-through; text-decoration-color: #444; }
+  .tangbi-badge {
+    display: inline-block; background: rgba(255,107,43,0.15); border: 1px solid var(--accent2);
+    color: var(--accent2); font-size: 10px; font-family: var(--mono);
+    padding: 2px 8px; border-radius: 2px; letter-spacing: 0.1em; margin-top: 4px;
+  }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .note { font-size: 11px; color: var(--muted); font-family: var(--mono); line-height: 1.6; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script>
+const { useState, useMemo } = React;
+
+function calculateMeters(sizeStr, qty) {
+  const value = parseFloat(sizeStr);
+  if (sizeStr.includes("inch")) return ((value + 2) * 0.0254) * qty;
+  return ((value + 5) / 100) * qty;
+}
+
+function App() {
+  const [chainPrice, setChainPrice] = useState(3500);
+  const [factoryFee, setFactoryFee] = useState(0);
+  const [tangbi, setTangbi] = useState(25000);
+  const [margin, setMargin] = useState(15);
+  const [items, setItems] = useState([{ id: 1, size: "50", unit: "cm", qty: 100 }]);
+
+  const addItem = () => setItems(p => [...p, { id: Date.now(), size: "50", unit: "cm", qty: 100 }]);
+  const removeItem = id => { if (items.length > 1) setItems(p => p.filter(i => i.id !== id)); };
+  const updateItem = (id, f, v) => setItems(p => p.map(i => i.id === id ? { ...i, [f]: v } : i));
+
+  const calc = useMemo(() => {
+    const processed = items.map(item => {
+      const sizeStr = item.unit === "cm" ? item.size : item.size + "inch";
+      const qty = parseInt(item.qty) || 0;
+      return { ...item, meters: calculateMeters(sizeStr, qty) };
+    });
+    const totalMeters = processed.reduce((s, i) => s + i.meters, 0);
+    const totalQty = processed.reduce((s, i) => s + (parseInt(i.qty) || 0), 0);
+    const baseWorkPrice = totalMeters * chainPrice;
+    const tangbiVal = parseFloat(tangbi) || 0;
+    const tangbiApplied = baseWorkPrice < tangbiVal ? tangbiVal : 0;
+    const costUnit = totalQty > 0
+      ? Math.round((baseWorkPrice + tangbiApplied) / totalQty + (parseFloat(factoryFee) || 0))
+      : 0;
+    // 마진율법: 판매가 = 원가 / (1 - 마진율)
+    const sellUnit = margin < 100 ? Math.round(costUnit / (1 - margin / 100)) : 0;
+    const marginAmt = sellUnit - costUnit;
+    return { processed, totalMeters, totalQty, baseWorkPrice, tangbiApplied, costUnit, sellUnit, marginAmt };
+  }, [items, chainPrice, factoryFee, tangbi, margin]);
+
+  const pct = ((margin - 10) / (20 - 10)) * 100;
+  const e = React.createElement;
+
+  return e('div', { className: 'app' },
+    e('div', { className: 'header' },
+      e('div', { className: 'header-title' }, '지퍼 단가 계산기'),
+      e('div', { className: 'header-sub' }, 'ZIPPER UNIT PRICE')
+    ),
+
+    // 품목 입력
+    e('div', { className: 'section' },
+      e('div', { className: 'section-label' }, '품목 입력'),
+      e('div', { className: 'items-header' },
+        e('span', null, '사이즈'), e('span', null, '단위'), e('span', null, '수량'),
+        e('span', { style: { textAlign: 'right' } }, '총 미터'), e('span', null, '')
+      ),
+      ...calc.processed.map(item =>
+        e('div', { className: 'item-row', key: item.id },
+          e('input', { type: 'number', value: item.size, onChange: ev => updateItem(item.id, 'size', ev.target.value) }),
+          e('select', { value: item.unit, onChange: ev => updateItem(item.id, 'unit', ev.target.value) },
+            e('option', { value: 'cm' }, 'cm'), e('option', { value: 'inch' }, 'inch')
+          ),
+          e('input', { type: 'number', value: item.qty, onChange: ev => updateItem(item.id, 'qty', ev.target.value) }),
+          e('div', { className: 'item-meters' }, item.meters.toFixed(2) + ' m'),
+          e('button', { className: 'btn-remove', onClick: () => removeItem(item.id) }, '×')
+        )
+      ),
+      e('button', { className: 'btn-add', onClick: addItem }, '+ 품목 추가')
+    ),
+
+    // 기본 설정
+    e('div', { className: 'section' },
+      e('div', { className: 'section-label' }, '기본 설정'),
+      e('div', { className: 'fee-row' },
+        e('div', { className: 'field' },
+          e('label', null, '체인 단가 (원/m)'),
+          e('input', { type: 'number', value: chainPrice, onChange: ev => setChainPrice(parseFloat(ev.target.value) || 0) })
+        ),
+        e('div', { className: 'field' },
+          e('label', null, '탕비 기준 (원)'),
+          e('input', { type: 'number', value: tangbi, onChange: ev => setTangbi(ev.target.value) })
+        ),
+        e('div', { className: 'field' },
+          e('label', null, '공장 추가 개당비 (원)'),
+          e('input', { type: 'number', value: factoryFee, onChange: ev => setFactoryFee(ev.target.value) })
+        )
+      )
+    ),
+
+    // 마진 설정
+    e('div', { className: 'margin-section' },
+      e('div', { className: 'section-label' }, '마진 설정 (마진율법)'),
+      e('div', { className: 'margin-row' },
+        e('div', { className: 'margin-slider-wrap' },
+          e('div', { className: 'margin-labels' },
+            ...[10,11,12,13,14,15,16,17,18,19,20].map(n =>
+              e('span', { key: n, style: { color: n === margin ? 'var(--accent)' : undefined } }, n === margin ? n+'%' : (n % 5 === 0 ? n : '·'))
+            )
+          ),
+          e('input', {
+            type: 'range', min: 10, max: 20, step: 1, value: margin,
+            style: { '--pct': pct + '%' },
+            onChange: ev => setMargin(parseInt(ev.target.value))
+          }),
+          e('div', { className: 'step-btns' },
+            e('button', { className: 'step-btn', onClick: () => setMargin(m => Math.max(10, m - 1)) }, '− 1%'),
+            e('button', { className: 'step-btn', onClick: () => setMargin(m => Math.min(20, m + 1)) }, '+ 1%')
+          )
+        ),
+        e('div', { className: 'margin-value-box' },
+          e('div', { className: 'mv-num' }, margin),
+          e('div', { className: 'mv-unit' }, 'MARGIN %')
+        )
+      )
+    ),
+
+    // 결과
+    e('div', { className: 'result-section' },
+      e('div', { className: 'section-label' }, '계산 결과'),
+      e('div', { className: 'result-pair' },
+        e('div', { className: 'big-price' },
+          e('div', { className: 'r-label' }, `판매 단가 (마진 ${margin}%)`),
+          e('div', { className: 'r-value' }, calc.sellUnit.toLocaleString() + '원'),
+          calc.tangbiApplied > 0 ? e('div', { className: 'tangbi-badge' }, `탕비 ${(parseFloat(tangbi)||0).toLocaleString()}원 적용`) : null
+        ),
+        e('div', { className: 'cost-price' },
+          e('div', { className: 'r-label' }, '원가 단가'),
+          e('div', { className: 'r-value' }, calc.costUnit.toLocaleString() + '원')
+        )
+      ),
+      e('hr', { className: 'divider' }),
+      e('div', { className: 'result-grid' },
+        e('div', { className: 'result-item' },
+          e('div', { className: 'r-label' }, '총 미터'),
+          e('div', { className: 'r-value' }, calc.totalMeters.toFixed(3) + ' m')
+        ),
+        e('div', { className: 'result-item' },
+          e('div', { className: 'r-label' }, '총 수량'),
+          e('div', { className: 'r-value' }, calc.totalQty.toLocaleString() + ' 개')
+        ),
+        e('div', { className: 'result-item' },
+          e('div', { className: 'r-label' }, '기본 작업비 합계'),
+          e('div', { className: 'r-value' }, Math.round(calc.baseWorkPrice).toLocaleString() + ' 원')
+        ),
+        e('div', { className: 'result-item' },
+          e('div', { className: 'r-label' }, '탕비'),
+          e('div', { className: 'r-value', style: { color: calc.tangbiApplied > 0 ? 'var(--accent2)' : 'var(--muted)' } },
+            calc.tangbiApplied > 0 ? `+ ${calc.tangbiApplied.toLocaleString()} 원` : '—'
+          )
+        ),
+        e('div', { className: 'result-item' },
+          e('div', { className: 'r-label' }, '개당 마진 금액'),
+          e('div', { className: 'r-value', style: { color: 'var(--accent)' } }, calc.marginAmt.toLocaleString() + ' 원')
+        ),
+        e('div', { className: 'result-item' },
+          e('div', { className: 'r-label' }, '총 마진 금액'),
+          e('div', { className: 'r-value', style: { color: 'var(--accent)' } }, (calc.marginAmt * calc.totalQty).toLocaleString() + ' 원')
+        )
+      ),
+      e('hr', { className: 'divider' }),
+      e('div', { className: 'note' },
+        '※ 마진율법: 판매가 = 원가 ÷ (1 − 마진율)',
+        e('br'),
+        `※ 예) 원가 ${calc.costUnit.toLocaleString()}원 ÷ (1 − ${margin/100}) = ${calc.sellUnit.toLocaleString()}원`
+      )
+    )
+  );
+}
+
+ReactDOM.render(React.createElement(App), document.getElementById('root'));
+</script>
+</body>
+</html>
